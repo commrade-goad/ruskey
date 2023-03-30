@@ -171,20 +171,24 @@ fn spawn_notif(string: String, progress_bar_value: i32) {
         0 => {
             process::Command::new("/usr/bin/dunstify")
                 .arg("--appname=ruskey")
+                .arg("-r")
+                .arg("2593")
                 .arg(&format!("{string}"))
                 .arg("-t")
-                .arg("500")
+                .arg("1000")
                 .spawn()
                 .expect("Failed!");
         }
         _ => {
             process::Command::new("/usr/bin/dunstify")
                 .arg("--appname=ruskey")
+                .arg("-r")
+                .arg("2593")
                 .arg("-h")
                 .arg(&format!("int:value:{}", progress_bar_value))
                 .arg(&format!("{string}"))
                 .arg("-t")
-                .arg("500")
+                .arg("1000")
                 .spawn()
                 .expect("Failed!");
         }
