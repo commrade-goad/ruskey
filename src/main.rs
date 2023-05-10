@@ -22,6 +22,9 @@ fn parse_args(mut args: Vec<String>) -> Vec<i32> {
         "toggle" => {
             return_value.push(3);
         }
+        "set" => {
+            return_value.push(4);
+        }
         _ => {
             return_value.push(0);
         }
@@ -30,13 +33,17 @@ fn parse_args(mut args: Vec<String>) -> Vec<i32> {
         3 => {
             return return_value;
         }
+        4 => {
+            let value = args[3].parse().expect("ERROR : Failed to parse the second value");
+            return_value.push(value);
+        }
         _ => {
             args.push("5".to_string());
             let value = args[3].parse().unwrap_or(5);
             return_value.push(value);
-            return return_value;
         }
     }
+    return return_value;
 }
 
 fn reader(parsed_args: Vec<i32>) -> i32 {
@@ -102,6 +109,15 @@ fn reader(parsed_args: Vec<i32>) -> i32 {
                     }
                 };
             }
+            4 => {
+                let mut command_status = process::Command::new("/usr/bin/pamixer")
+                    .arg("--set-volume")
+                    .arg(format!("{}", parsed_args[2]))
+                    .spawn()
+                    .expect("Failed!");
+                let _result = command_status.wait().unwrap();
+                label.push("[ 🔊 ]".to_string());
+            }
             _ => return 1,
         };
         // std::thread::sleep(std::time::Duration::from_millis(time_sleep));
@@ -140,7 +156,16 @@ fn reader(parsed_args: Vec<i32>) -> i32 {
                     .spawn()
                     .expect("Failed!");
                 let _result = command_status.wait().unwrap();
-                label.push("[ ☾ ]".to_string());
+                label.push("[  ]".to_string());
+            }
+            4 => {
+                let mut command_status = process::Command::new("/usr/bin/brightnessctl")
+                    .arg("set")
+                    .arg(format!("{}%",parsed_args[2]))
+                    .spawn()
+                    .expect("Failed!");
+                let _result = command_status.wait().unwrap();
+                label.push("[  ]".to_string());
             }
             _ => return 1,
         };
