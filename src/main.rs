@@ -1,7 +1,7 @@
 use std::env;
 use std::process;
 
-enum Mode{
+enum Mode {
     Up,
     Down,
     Toggle,
@@ -16,7 +16,7 @@ enum Capability {
 struct Bundle {
     mode: Option<Mode>,
     capability: Option<Capability>,
-    value: Option<i32>
+    value: Option<i32>,
 }
 
 impl Bundle {
@@ -29,8 +29,12 @@ impl Bundle {
     fn set_value(&mut self, new_value: i32) {
         return self.value = Some(new_value);
     }
-    fn default_value() -> Bundle{
-        return Bundle{mode: None, capability: None, value: None}
+    fn default_value() -> Bundle {
+        return Bundle {
+            mode: None,
+            capability: None,
+            value: None,
+        };
     }
 }
 
@@ -61,7 +65,9 @@ fn parse_args(mut args: Vec<String>) -> Bundle {
                 println!("ERROR : Missing set value");
                 process::exit(1);
             }
-            let value = args[3].parse().expect("ERROR : Failed to parse the second value");
+            let value = args[3]
+                .parse()
+                .expect("ERROR : Failed to parse the second value");
             return_value.set_value(value);
         }
         _ => {
@@ -76,7 +82,7 @@ fn parse_args(mut args: Vec<String>) -> Bundle {
 fn reader(parsed_args: Bundle) -> i32 {
     if parsed_args.capability.is_none() || parsed_args.mode.is_none() {
         return 1;
-    } 
+    }
 
     let mut label: Vec<String> = Vec::new();
     match parsed_args.capability {
@@ -110,10 +116,10 @@ fn reader(parsed_args: Bundle) -> i32 {
                     let value = match process::Command::new("/usr/bin/pamixer")
                         .arg("--get-mute")
                         .output()
-                        {
-                            Ok(v) => v,
-                            Err(_e) => return 1,
-                        };
+                    {
+                        Ok(v) => v,
+                        Err(_e) => return 1,
+                    };
                     let value_converted_bool = String::from_utf8_lossy(&value.stdout)
                         .trim()
                         .parse::<bool>()
@@ -146,10 +152,10 @@ fn reader(parsed_args: Bundle) -> i32 {
             let value = match process::Command::new("/usr/bin/pamixer")
                 .arg("--get-volume")
                 .output()
-                {
-                    Ok(v) => v,
-                    Err(_e) => return 1,
-                };
+            {
+                Ok(v) => v,
+                Err(_e) => return 1,
+            };
             let value_converted = String::from_utf8_lossy(&value.stdout)
                 .trim()
                 .parse::<i32>()
@@ -165,7 +171,7 @@ fn reader(parsed_args: Bundle) -> i32 {
                 Mode::Up => {
                     let mut command_status = process::Command::new("/usr/bin/brightnessctl")
                         .arg("set")
-                        .arg(format!("{}%+",parsed_args.value.unwrap()))
+                        .arg(format!("{}%+", parsed_args.value.unwrap()))
                         .spawn()
                         .expect("Failed!");
                     let _result = command_status.wait().unwrap();
@@ -174,7 +180,7 @@ fn reader(parsed_args: Bundle) -> i32 {
                 Mode::Down => {
                     let mut command_status = process::Command::new("/usr/bin/brightnessctl")
                         .arg("set")
-                        .arg(format!("{}%-",parsed_args.value.unwrap()))
+                        .arg(format!("{}%-", parsed_args.value.unwrap()))
                         .spawn()
                         .expect("Failed!");
                     let _result = command_status.wait().unwrap();
@@ -183,7 +189,7 @@ fn reader(parsed_args: Bundle) -> i32 {
                 Mode::Set => {
                     let mut command_status = process::Command::new("/usr/bin/brightnessctl")
                         .arg("set")
-                        .arg(format!("{}%",parsed_args.value.unwrap()))
+                        .arg(format!("{}%", parsed_args.value.unwrap()))
                         .spawn()
                         .expect("Failed!");
                     let _result = command_status.wait().unwrap();
@@ -194,10 +200,10 @@ fn reader(parsed_args: Bundle) -> i32 {
             let value = match process::Command::new("/usr/bin/brightnessctl")
                 .arg("get")
                 .output()
-                {
-                    Ok(v) => v,
-                    Err(_e) => return 1,
-                };
+            {
+                Ok(v) => v,
+                Err(_e) => return 1,
+            };
             let value_converted = String::from_utf8_lossy(&value.stdout)
                 .trim()
                 .parse::<i32>()
@@ -208,7 +214,7 @@ fn reader(parsed_args: Bundle) -> i32 {
                 value_percentage,
             );
             return 0;
-        },
+        }
         None => {}
     }
     return 1;
